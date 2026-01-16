@@ -1,16 +1,14 @@
 import 'dotenv/config';
 import { PrismaClient } from '@prisma/client';
-import { PrismaLibSQL } from '@prisma/adapter-libsql';
-import { createClient } from '@libsql/client';
+import { PrismaLibSql } from '@prisma/adapter-libsql';
 import { addDays } from 'date-fns';
 
-// Create LibSQL client for Turso
-const libsql = createClient({
+// Create LibSQL adapter for Turso
+const adapter = new PrismaLibSql({
   url: process.env.DATABASE_URL || 'file:./dev.db',
   authToken: process.env.TURSO_AUTH_TOKEN,
 });
 
-const adapter = PrismaLibSQL(libsql);
 const prisma = new PrismaClient({ adapter });
 
 async function main() {

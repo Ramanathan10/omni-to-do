@@ -46,7 +46,7 @@ export async function PATCH(
     const body = await request.json();
     const validatedData = updateTaskSchema.parse(body);
 
-    // Convert date strings to Date objects if present
+    // Convert date strings to Date objects after validation
     const updateData: any = { ...validatedData };
 
     if (validatedData.dueDate !== undefined) {
@@ -56,9 +56,13 @@ export async function PATCH(
       updateData.deferDate = validatedData.deferDate ? new Date(validatedData.deferDate) : null;
     }
     if (validatedData.completedAt !== undefined) {
-      updateData.completedAt = validatedData.completedAt
-        ? new Date(validatedData.completedAt)
-        : null;
+      updateData.completedAt = validatedData.completedAt ? new Date(validatedData.completedAt) : null;
+    }
+    if (validatedData.projectId !== undefined) {
+      updateData.projectId = validatedData.projectId || null;
+    }
+    if (validatedData.parentId !== undefined) {
+      updateData.parentId = validatedData.parentId || null;
     }
 
     const task = await prisma.task.update({
@@ -74,7 +78,7 @@ export async function PATCH(
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Validation error', details: error.errors },
+        { error: 'Validation error', details: error.issues },
         { status: 400 }
       );
     }

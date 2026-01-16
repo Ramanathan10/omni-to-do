@@ -41,7 +41,10 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const validatedData = createProjectSchema.parse(body);
+    const validatedData = createProjectSchema.parse({
+      ...body,
+      status: body.status || 'active',
+    });
 
     const project = await prisma.project.create({
       data: validatedData,
@@ -54,7 +57,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Validation error', details: error.errors },
+        { error: 'Validation error', details: error.issues },
         { status: 400 }
       );
     }

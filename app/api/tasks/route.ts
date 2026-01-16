@@ -54,19 +54,20 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const validatedData = createTaskSchema.parse(body);
+    const validatedData = createTaskSchema.parse({
+      ...body,
+      status: body.status || 'inbox',
+      sortOrder: body.sortOrder ?? 0,
+    });
 
-    // Convert date strings to Date objects if present
+    // Convert date strings to Date objects after validation
     const taskData: any = {
       ...validatedData,
+      dueDate: validatedData.dueDate ? new Date(validatedData.dueDate) : null,
+      deferDate: validatedData.deferDate ? new Date(validatedData.deferDate) : null,
+      projectId: validatedData.projectId || null,
+      parentId: validatedData.parentId || null,
     };
-
-    if (validatedData.dueDate) {
-      taskData.dueDate = new Date(validatedData.dueDate);
-    }
-    if (validatedData.deferDate) {
-      taskData.deferDate = new Date(validatedData.deferDate);
-    }
 
     const task = await prisma.task.create({
       data: taskData,
@@ -80,7 +81,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: 'Validation error', details: error.errors },
+        { error: 'Validation error', details: error.issues },
         { status: 400 }
       );
     }

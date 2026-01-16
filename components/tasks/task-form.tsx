@@ -70,6 +70,7 @@ export function TaskForm() {
       notes: '',
       status: 'inbox',
       projectId: '',
+      sortOrder: 0,
     },
   });
 
@@ -89,12 +90,12 @@ export function TaskForm() {
       if (editingTask.dueDate) {
         const date = new Date(editingTask.dueDate);
         setDueDate(date);
-        setValue('dueDate', date);
+        setValue('dueDate', date.toISOString());
       }
       if (editingTask.deferDate) {
         const date = new Date(editingTask.deferDate);
         setDeferDate(date);
-        setValue('deferDate', date);
+        setValue('deferDate', date.toISOString());
       }
     } else {
       reset();
@@ -110,7 +111,7 @@ export function TaskForm() {
       ...data,
       dueDate: dueDate?.toISOString(),
       deferDate: deferDate?.toISOString(),
-      projectId: data.projectId || null,
+      projectId: data.projectId || undefined,
     };
 
     let success = false;
@@ -238,7 +239,7 @@ export function TaskForm() {
                     selected={deferDate}
                     onSelect={(date) => {
                       setDeferDate(date);
-                      setValue('deferDate', date);
+                      setValue('deferDate', date?.toISOString());
                     }}
                     initialFocus
                   />
@@ -285,7 +286,7 @@ export function TaskForm() {
                     selected={dueDate}
                     onSelect={(date) => {
                       setDueDate(date);
-                      setValue('dueDate', date);
+                      setValue('dueDate', date?.toISOString());
                     }}
                     initialFocus
                   />
