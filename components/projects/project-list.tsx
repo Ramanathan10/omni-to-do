@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useProjectStore } from '@/stores/project-store';
 import { useUIStore } from '@/stores/ui-store';
-import type { ProjectWithTasks } from '@/types/domain';
+import type { ProjectWithTasks, Task } from '@/types/domain';
 
 interface ProjectListProps {
   projects: ProjectWithTasks[];
@@ -47,10 +47,10 @@ export function ProjectList({ projects, emptyMessage = 'No projects found' }: Pr
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       {projects.map((project) => {
         const totalTasks = project.tasks.length;
-        const completedTasks = project.tasks.filter((t) => t.completedAt).length;
+        const completedTasks = project.tasks.filter((t: Task) => t.completedAt).length;
         const activeTasks = totalTasks - completedTasks;
         const overdueTasks = project.tasks.filter(
-          (t) => !t.completedAt && t.dueDate && new Date(t.dueDate) < new Date()
+          (t: Task) => !t.completedAt && t.dueDate && new Date(t.dueDate) < new Date()
         ).length;
 
         return (
