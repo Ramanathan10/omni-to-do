@@ -15,7 +15,7 @@ import {
 import { useTaskStore } from '@/stores/task-store';
 import { useUIStore } from '@/stores/ui-store';
 import { isTaskOverdue, isTaskDeferred } from '@/lib/utils/date-filters';
-import type { TaskWithProject } from '@/types/domain';
+import type { TaskWithProject, Task } from '@/types/domain';
 import { cn } from '@/lib/utils';
 
 interface TaskItemProps {
@@ -107,7 +107,7 @@ export function TaskItem({ task, showProject = true, onTaskClick }: TaskItemProp
 
           {task.children && task.children.length > 0 && (
             <span className="text-xs">
-              {task.children.filter((c) => !c.completedAt).length} subtasks
+              {task.children.filter((c: Task) => !c.completedAt).length} subtasks
             </span>
           )}
         </div>
