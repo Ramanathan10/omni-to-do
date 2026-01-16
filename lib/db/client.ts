@@ -1,17 +1,23 @@
 import { PrismaClient } from '@prisma/client';
-import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
-
-// Prisma 7 requires driver adapter for SQLite
-const databaseUrl = process.env.DATABASE_URL || 'file:./dev.db';
+import { PrismaLibSQL } from '@prisma/adapter-libsql';
+import { createClient } from '@libsql/client';
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
 
+// Create LibSQL client for Turso
+const libsql = createClient({
+  url: process.env.DATABASE_URL || 'file:./dev.db',
+  authToken: process.env.TURSO_AUTH_TOKEN,
+});
+
+const adapter = PrismaLibSQL(libsql);
+
 export const prisma =
   globalForPrisma.prisma ??
   new PrismaClient({
-    adapter: new PrismaBetterSqlite3({ url: databaseUrl }),
+    adapter,
     log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
   });
 

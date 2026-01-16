@@ -1,12 +1,16 @@
 import 'dotenv/config';
 import { PrismaClient } from '@prisma/client';
-import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
-import Database from 'better-sqlite3';
+import { PrismaLibSQL } from '@prisma/adapter-libsql';
+import { createClient } from '@libsql/client';
 import { addDays } from 'date-fns';
 
-// Prisma 7 requires driver adapter for SQLite
-const databaseUrl = process.env.DATABASE_URL || 'file:./dev.db';
-const adapter = new PrismaBetterSqlite3({ url: databaseUrl });
+// Create LibSQL client for Turso
+const libsql = createClient({
+  url: process.env.DATABASE_URL || 'file:./dev.db',
+  authToken: process.env.TURSO_AUTH_TOKEN,
+});
+
+const adapter = PrismaLibSQL(libsql);
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
